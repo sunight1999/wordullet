@@ -10,6 +10,9 @@
 #define	KEY_a 0x61
 #define KEY_z 0x7A
 
+#define KEY_0 0x30
+#define KEY_9 0x57
+
 HHOOK hMouseHook;
 HHOOK hKeyHook;
 
@@ -32,11 +35,14 @@ void TypeKey(char c, int flag)
 
 	/* Press Key */
 	// Press shift key for capital character
-	int is_cap = KEY_A <= c && c < KEY_a;
+	int is_cap = (KEY_A <= c && c < KEY_a) || (c < 0);
 	if (is_cap)
 	{
 		input.ki.wVk = VK_SHIFT;
 		SendInput(1, &input, sizeof(INPUT));
+
+		if (c < 0)
+			c *= -1;
 	}
 	else if (KEY_a <= c && c <= KEY_z)
 	{
@@ -60,14 +66,47 @@ void TypeKey(char c, int flag)
 	}
 }
 
-char Convert2VK(char c)
+int Convert2VK(char c)
 {
+	// negative means need to be shift clicked
 	switch (c)
 	{
 	case '\'':
-		return 22;
+		return 222;
+	case '"':
+		return -222;
 	case '/':
-		return 191;
+		return 145;
+	case '!':
+		return -49;
+	case '@':
+		return -50;
+	case '#':
+		return -51;
+	case '$':
+		return -52;
+	case '%':
+		return -53;
+	case '^':
+		return -54;
+	case '&':
+		return -55;
+	case '*':
+		return -56;
+	case '(':
+		return -57;
+	case ')':
+		return -48;
+	case '-':
+		return 189;
+	case '=':
+		return 187;
+	case '+':
+		return -187;
+	case ',':
+		return 188;
+	case '.':
+		return 146;
 	default:
 		return c;
 	}
@@ -86,7 +125,7 @@ void Type(char *str)
 void LoadWordullet()
 {
 	/* Collect wordullets from text file */
-	FILE *f = fopen("errlist.txt", "r");
+	FILE *f = fopen("wordullet.txt", "r");
 	if (!f)
 	{
 		printf("%s\n", strerror(errno));
@@ -160,8 +199,8 @@ LRESULT CALLBACK keyProc (int nCode, WPARAM wParam, LPARAM lParam)
 
 DWORD WINAPI ShootStart(LPVOID lpParam)
 {
-	//hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, NULL);
-	hKeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, keyProc, NULL, NULL);
+	hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, NULL);
+	//hKeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, keyProc, NULL, NULL);
 
 	MSG message;
     while (GetMessage(&message,NULL,0,0)) {
@@ -172,6 +211,15 @@ DWORD WINAPI ShootStart(LPVOID lpParam)
 	UnhookWindowsHookEx(hMouseHook);
 
 	return 0;
+}
+
+void printall()
+{
+	Sleep(2000);
+	for (int i = 0xBB; i < 0xBC ; ++i)
+	{
+		TypeKey(i*-1, 0);
+	}
 }
 
 int main()
@@ -188,7 +236,7 @@ int main()
 	dblclktim = GetDoubleClickTime() ;
 
 	hThread = CreateThread(NULL, NULL, ShootStart, NULL, NULL, &dwThread);
-	idx = 10;
+	
 	while (eidx < idx)
 		Sleep(100);
 
