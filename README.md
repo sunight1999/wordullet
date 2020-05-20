@@ -59,4 +59,4 @@ GREEN TEA
 # 🍭 How it works?
 I used `SetWindowsHookEx` to hook the mouse and keyboard events. It makes me enable to detect the user's mouse clicking. However, in my case, I couldn't receive the mouse double click event for some reason (which i don't know), so I set the timer between every click event. If delay between 2 clickings is less than `GetDoubleClickTime`, that is the double click.
 
-*...Warm Regards >_0*
+*...Warm Regards :)*
