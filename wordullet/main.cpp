@@ -148,7 +148,7 @@ void LoadWordullet()
 		if (idx == size)
 		{
 			size += INIT_NUM;
-			wordullets = (char **)realloc(wordullets, size);
+			wordullets = (char **)realloc(wordullets, size * INIT_SIZE * sizeof(char));
 
 			for (int i = size - INIT_NUM; i < size; ++i)
 			{
